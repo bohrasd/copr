@@ -71,23 +71,33 @@ This approach keeps each package in its own repository/branch, making it easier 
 
 ### Publishing to Copr
 
+#### Quick Setup (Recommended)
+Use the provided setup script:
+```bash
+./copr-setup.sh
+```
+
+This script will:
+- Check if `copr-cli` is installed and configured
+- Create a Copr repository if it doesn't exist
+- Build and publish the package
+
+#### Manual Setup
+
 1. First, make sure you have `copr-cli` installed and configured:
    ```bash
    sudo dnf install copr-cli
    # Configure copr-cli (follow the setup instructions)
-   copr-cli create your-repo-name
+   copr-cli create your-repo-name --chroot fedora-41-aarch64 --chroot fedora-42-aarch64
    ```
 
 2. Build and submit to Copr:
    ```bash
-   # Build source RPM locally
-   tito build --srpm
-   
-   # Submit to Copr
-   copr-cli build your-repo-name /tmp/tito/1password-*.src.rpm
-   
-   # Or build directly from git (if your repo is public)
+   # Build directly from git (recommended - requires public repo)
    copr-cli buildscm your-repo-name --clone-url https://github.com/yourusername/yourrepo.git
+   
+   # Note: Local SRPM build will fail due to remote source file
+   # This is expected - Copr handles remote sources automatically
    ```
 
 ## Development
@@ -110,8 +120,9 @@ Test your spec file before building:
 # Check spec file syntax
 rpmspec -P 1password.spec
 
-# Test build locally
-tito build --rpm --test
+# Note: Local RPM build will fail due to remote source file
+# This is expected - the package is designed for Copr which handles remote sources
+# For actual testing, use the Copr build process
 ```
 
 ## Contributing
@@ -125,6 +136,23 @@ tito build --rpm --test
 ## Notes
 
 - This repository is designed for ARM64 (aarch64) packages
-- Each package should be self-contained in its own directory
+- The package downloads source files from remote URLs during Copr builds
+- Local builds will fail due to missing remote source files (this is expected)
 - Use tito for consistent versioning and changelog management
-- Test builds locally before submitting to Copr 
+- For testing, use the Copr build process rather than local builds
+- Each package should be self-contained in its own repository/branch
+
+## Important Limitations
+
+- **Local Testing**: Local SRPM/RPM builds will fail because the source comes from a remote URL
+- **Architecture**: This package is specifically for ARM64 (aarch64) systems
+- **Dependencies**: The package includes many GUI dependencies - adjust as needed for your use case
+- **Copr Only**: This package is designed specifically for Copr builds, not traditional RPM building
+
+## Troubleshooting
+
+### "Bad file: 1password-latest.tar.gz: No such file or directory"
+This error is expected when building locally. The package is designed for Copr which automatically downloads remote source files. Use the Copr build process instead.
+
+### "Error running command: git config remote.origin.url"
+This warning can be ignored for local testing. For Copr builds, make sure your repository is pushed to GitHub/GitLab with a proper remote origin. 

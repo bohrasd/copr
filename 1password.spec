@@ -32,7 +32,7 @@ integrating directly with over 500 apps and sites to automatically log you in.
 This package contains the 1Password desktop application and command-line tool.
 
 %prep
-%autosetup -c -n %{name}-%{version}
+%setup -q -c -n %{name}-%{version}
 
 %build
 # Nothing to build - this is a binary distribution
