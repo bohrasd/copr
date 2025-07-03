@@ -6,4 +6,8 @@ changelog_format = %s (%ae)
 
 [globalconfig]
 default_builder = tito.builder.Builder
-default_tagger = tito.tagger.VersionTagger 
+default_tagger = tito.tagger.VersionTagger
+
+[packages/1password]
+builder = tito.builder.Builder
+tagger = tito.tagger.VersionTagger 
