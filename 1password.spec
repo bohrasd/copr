@@ -1,5 +1,5 @@
 Name:           1password
-Version:        8.10.52
+Version:        8.10.53
 Release:        1%{?dist}
 Summary:        1Password command-line tool and desktop application
 
@@ -87,6 +87,10 @@ fi
 %{_datadir}/pixmaps/1password.png
 
 %changelog
+* Wed Jul 23 2025 bohrasd <bohrasdf@gmail.com> 8.10.53-1
+- Fix Copr build issues (bohrasdf@gmail.com)
+- Add Copr setup script and improve documentation (bohrasdf@gmail.com)
+
 * Thu Jul 03 2025 bohrasd <bohrasdf@gmail.com> 8.10.52-1
 - new package built with tito
 
