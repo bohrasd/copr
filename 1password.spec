@@ -13,22 +13,11 @@ BuildArch:      aarch64
 %global debug_package %{nil}
 %global _build_id_links none
 
-Requires:       glibc
-Requires:       gtk3
-Requires:       libX11
-Requires:       libXrandr
-Requires:       libXext
-Requires:       libXfixes
-Requires:       libXdamage
-Requires:       libXcomposite
-Requires:       libXcursor
-Requires:       libXi
-Requires:       libXtst
-Requires:       libxkbcommon
-Requires:       libdrm
-Requires:       libxcb
-Requires:       libXss
+# Most dependencies are auto-detected by RPM
+# Only specify packages that might not be auto-detected or are essential
+Requires:       libXScrnSaver
 Requires:       nss
+Requires:       gtk3
 Requires:       alsa-lib
 
 %description
