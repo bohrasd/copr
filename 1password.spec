@@ -1,5 +1,5 @@
 Name:           1password
-Version:        8.10.54
+Version:        8.10.55
 Release:        1%{?dist}
 Summary:        1Password command-line tool and desktop application
 
@@ -84,6 +84,10 @@ fi
 %{_datadir}/pixmaps/1password.png
 
 %changelog
+* Wed Jul 23 2025 bohrasd <bohrasdf@gmail.com> 8.10.55-1
+- Fix symlink paths by flattening install directory structure
+  (bohrasdf@gmail.com)
+
 * Wed Jul 23 2025 bohrasd <bohrasdf@gmail.com> 8.10.54-1
 - Fix dependency issue: libXss -> libXScrnSaver (bohrasdf@gmail.com)
 
