@@ -8,6 +8,11 @@ URL:            https://1password.com
 Source0:        https://downloads.1password.com/linux/tar/stable/aarch64/1password-latest.tar.gz
 
 BuildArch:      aarch64
+
+# Disable debug package generation for binary distribution
+%global debug_package %{nil}
+%global _build_id_links none
+
 Requires:       glibc
 Requires:       gtk3
 Requires:       libX11
@@ -65,10 +70,13 @@ Categories=Utility;Security;
 MimeType=x-scheme-handler/onepassword;
 EOF
 
-# Install icon
+# Install icon (create a placeholder if original doesn't exist)
 mkdir -p %{buildroot}%{_datadir}/pixmaps
-if [ -f /opt/1password/resources/icons/hicolor/512x512/apps/1password.png ]; then
-    cp /opt/1password/resources/icons/hicolor/512x512/apps/1password.png %{buildroot}%{_datadir}/pixmaps/1password.png
+if [ -f %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png ]; then
+    cp %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png %{buildroot}%{_datadir}/pixmaps/1password.png
+else
+    # Create a simple placeholder icon
+    touch %{buildroot}%{_datadir}/pixmaps/1password.png
 fi
 
 %files
@@ -83,7 +91,4 @@ fi
 - new package built with tito
 
 * Thu Jul 03 2025 bohrasd <bohrasdf@gmail.com> 8.10.51-1
-- new package built with tito
-
-* %(date "+%a %b %d %Y") Automated Build <noreply@example.com> - %{version}-%{release}
-- Initial package for 1Password %{version} 
+- new package built with tito 
