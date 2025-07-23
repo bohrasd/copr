@@ -35,8 +35,16 @@ This package contains the 1Password desktop application and command-line tool.
 # Create the target directory
 mkdir -p %{buildroot}/opt/1password
 
-# Copy all files from the extracted tarball
-cp -r * %{buildroot}/opt/1password/
+# Copy all files from the extracted tarball, flattening the structure
+# The tarball contains a versioned directory like 1password-8.11.2.arm64
+# Find the 1password directory and copy its contents
+ONEPASS_DIR=$(find . -maxdepth 1 -name "1password*" -type d | head -1)
+if [ -n "$ONEPASS_DIR" ]; then
+    cp -r "$ONEPASS_DIR"/. %{buildroot}/opt/1password/
+else
+    # Fallback: copy everything if no 1password directory found
+    cp -r . %{buildroot}/opt/1password/
+fi
 
 # Create symlinks for the executables
 mkdir -p %{buildroot}%{_bindir}
@@ -64,7 +72,7 @@ mkdir -p %{buildroot}%{_datadir}/pixmaps
 if [ -f %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png ]; then
     cp %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png %{buildroot}%{_datadir}/pixmaps/1password.png
 else
-    # Create a simple placeholder icon
+    # Create a simple placeholder icon if the expected icon doesn't exist
     touch %{buildroot}%{_datadir}/pixmaps/1password.png
 fi
 
