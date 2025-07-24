@@ -9,6 +9,9 @@ Source0:        https://downloads.1password.com/linux/tar/stable/aarch64/1passwo
 
 BuildArch:      aarch64
 
+# Build requirements for desktop integration
+BuildRequires:  desktop-file-utils
+
 # Disable debug package generation for binary distribution
 %global debug_package %{nil}
 %global _build_id_links none
@@ -19,6 +22,12 @@ Requires:       libXScrnSaver
 Requires:       nss
 Requires:       gtk3
 Requires:       alsa-lib
+
+# Runtime requirements for desktop integration
+Requires(post): desktop-file-utils
+Requires(postun): desktop-file-utils
+Requires(post): gtk-update-icon-cache
+Requires(postun): gtk-update-icon-cache
 
 %description
 1Password is a password manager that goes beyond simple password storage by
@@ -58,23 +67,64 @@ cat > %{buildroot}%{_datadir}/applications/1password.desktop << 'EOF'
 Type=Application
 Name=1Password
 GenericName=Password Manager
-Comment=Password Manager
-Exec=/opt/1password/1password %U
-Icon=/opt/1password/resources/icons/hicolor/512x512/apps/1password.png
+Comment=1Password Password Manager
+Exec=1password %U
+Icon=1password
 StartupNotify=true
 NoDisplay=false
-Categories=Utility;Security;
+Categories=Utility;Security;Office;
 MimeType=x-scheme-handler/onepassword;
+Keywords=password;security;vault;login;credentials;
+StartupWMClass=1Password
 EOF
 
-# Install icon (create a placeholder if original doesn't exist)
+# Validate the desktop file
+desktop-file-validate %{buildroot}%{_datadir}/applications/1password.desktop
+
+# Install icon in proper system locations
 mkdir -p %{buildroot}%{_datadir}/pixmaps
-if [ -f %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png ]; then
-    cp %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png %{buildroot}%{_datadir}/pixmaps/1password.png
-else
-    # Create a simple placeholder icon if the expected icon doesn't exist
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
+
+# Try to find and install the icon
+ICON_FOUND=0
+for icon_path in %{buildroot}/opt/1password/resources/icons/hicolor/512x512/apps/1password.png \
+                 %{buildroot}/opt/1password/resources/icons/hicolor/256x256/apps/1password.png \
+                 %{buildroot}/opt/1password/resources/1password.png \
+                 %{buildroot}/opt/1password/1password.png; do
+    if [ -f "$icon_path" ]; then
+        cp "$icon_path" %{buildroot}%{_datadir}/pixmaps/1password.png
+        cp "$icon_path" %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/1password.png
+        ICON_FOUND=1
+        break
+    fi
+done
+
+# Create a placeholder if no icon was found
+if [ $ICON_FOUND -eq 0 ]; then
     touch %{buildroot}%{_datadir}/pixmaps/1password.png
+    touch %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/1password.png
 fi
+
+%post
+# Update desktop database and icon cache
+if [ $1 -eq 1 ]; then
+    # First installation
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+    /usr/bin/update-desktop-database &> /dev/null || :
+fi
+
+%postun
+# Update desktop database and icon cache on removal
+if [ $1 -eq 0 ]; then
+    # Package removal
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+    /usr/bin/update-desktop-database &> /dev/null || :
+fi
+
+%posttrans
+# Update icon cache after transaction
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files
 /opt/1password/
@@ -82,6 +132,7 @@ fi
 %{_bindir}/op
 %{_datadir}/applications/1password.desktop
 %{_datadir}/pixmaps/1password.png
+%{_datadir}/icons/hicolor/512x512/apps/1password.png
 
 %changelog
 * Wed Jul 23 2025 bohrasd <bohrasdf@gmail.com> 8.10.55-1
