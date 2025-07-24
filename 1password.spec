@@ -1,5 +1,5 @@
 Name:           1password
-Version:        8.11.3
+Version:        8.11.2
 Release:        1%{?dist}
 Summary:        1Password command-line tool and desktop application
 
