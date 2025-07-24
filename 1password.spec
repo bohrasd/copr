@@ -1,5 +1,5 @@
 Name:           1password
-Version:        8.11.2
+Version:        8.11.3
 Release:        1%{?dist}
 Summary:        1Password command-line tool and desktop application
 
@@ -135,6 +135,9 @@ fi
 %{_datadir}/icons/hicolor/512x512/apps/1password.png
 
 %changelog
+* Thu Jul 24 2025 bohrasd <bohrasdf@gmail.com> 8.11.3-1
+- Pin 1Password version to 8.11.2 for reproducible builds (bohrasdf@gmail.com)
+
 * Thu Jul 24 2025 bohrasd <bohrasdf@gmail.com> 8.10.56-1
 - Enhance desktop integration for automatic shortcut creation
   (bohrasdf@gmail.com)
