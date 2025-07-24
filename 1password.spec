@@ -1,11 +1,11 @@
 Name:           1password
-Version:        8.10.56
+Version:        8.11.2
 Release:        1%{?dist}
 Summary:        1Password command-line tool and desktop application
 
 License:        Proprietary
 URL:            https://1password.com
-Source0:        https://downloads.1password.com/linux/tar/stable/aarch64/1password-latest.tar.gz
+Source0:        https://downloads.1password.com/linux/tar/stable/aarch64/1password-%{version}.arm64.tar.gz
 
 BuildArch:      aarch64
 
